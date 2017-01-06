@@ -888,7 +888,8 @@ String baseURI1 = "http://example.org/example1/";
 File inputFile2 = new File("/path/to/example2.rdf");
 String baseURI2 = "http://example.org/example2/";
 
-try (RepositoryConnection con = myRepository.getConnection()) {
+RepositoryConnection con = myRepository.getConnection();
+try {
    // start a transaction
    con.begin();
    // Add the first file
