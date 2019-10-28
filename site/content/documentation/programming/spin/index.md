@@ -8,7 +8,7 @@ hide_page_title: "true"
 
 The SPARQL Inferencing Notation (SPIN) is a way to represent a wide range of business rules on top of an RDF dataset. These rules can be anything from constraint validation to inferred property value calculation.
 
-**SPIN is no longer recommended. The SpinSail does not scale and simple delete operations take seconds to execute. If you are considering using SPIN for validation, try SHACL and the ShaclSail instead. For inference beyond RDFS, RDF4J does not currently offer any options. If you still want to use SPIN for inference, it is recommended to disable the validation step for better performance: `spinSail.setValidateConstraints(false)`. SPIN was never designed to work in a transactional environment, which means that you should expect odd scenarios where you update your data without new data being inferred or old inferred data still sticking around.**
+**SPIN is no longer recommended. The SpinSail does not scale and simple delete operations take seconds to execute. If you are considering using SPIN for validation, try SHACL and the ShaclSail instead. Should you still want to use SPIN for inference, it is recommended to disable the validation step for better performance: `spinSail.setValidateConstraints(false)` (since 3.1.0). SPIN was never designed to work in a transactional environment, which means that you should expect odd scenarios where you update your data without new data being inferred or old inferred data still sticking around.**
 
 The `SpinSail` is a StackedSail component that adds a forward-chaining SPIN rule engine on top of any store. In its most basic form it can be used directly on top of a Sail:
 
