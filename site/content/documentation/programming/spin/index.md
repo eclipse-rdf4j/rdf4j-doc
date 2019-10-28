@@ -111,7 +111,7 @@ will give this result:
 </table>
 
 # Limitations
-The SpinSail attempts to only run relevant rules by detecting if data related to the rule has changed. This is only done by checking if any of the subjects in the added data have the type required by the rule. There is no analysis of the query, so if your query more more than a simple `?a ex:pred ?b`then you will run into incomplete inference.
+The SpinSail attempts to only run relevant rules by detecting if data related to the rule has changed. This is only done by checking if any of the subjects in the added data have the type required by the rule. There is no analysis of the query, so if your query contains more than a simple `?a ex:pred ?b` then you will run into incomplete inference in the face of updates.
 
 An example of a rule that will lead to incomplete inference results in the face of updates:
 
@@ -153,7 +153,7 @@ An example of a rule with negation that will lead to incorrect (stale) inference
                        }"""
     ] .
 
-Adding `ex:Peter ex:parentOf ex:PeterJr` and `ex:PeterJr a ex:Person` will lead to `ex:PeterJr a ex:OnlyChild`. This is correct. Adding `ex:Peter ex:parentOf ex:Caroline` means that `ex:PeterJr` should not be an Only Child anymore (according to the rule). `ex:PeterJr a ex:OnlyChild` will still be true even after adding `ex:Peter ex:parentOf ex:Caroline` because the SpinSail does not refresh already inferred data when there are no user-initiated deletions.
+Adding `ex:Peter ex:parentOf ex:PeterJr` and `ex:PeterJr a ex:Person` will lead to `ex:PeterJr a ex:OnlyChild` being true. This is correct. Adding `ex:Peter ex:parentOf ex:Caroline` means that `ex:PeterJr` should not be an Only Child anymore (according to the rule). `ex:PeterJr a ex:OnlyChild` will still be true even after adding `ex:Peter ex:parentOf ex:Caroline` because the SpinSail does not refresh already inferred data when there are no user-initiated deletions.
 
 # Performance
 
