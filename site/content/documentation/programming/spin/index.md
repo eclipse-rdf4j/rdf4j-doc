@@ -110,6 +110,48 @@ will give this result:
 <tr><td style="padding: 4px"><code>ex:Lucy</code></td></tr>
 </table>
 
+# Limitations
+The SpinSail attempts to only run relevant rules by detecting if data related to the rule has changed. This is only done by checking if any of the subjects in the added data have the type required by the rule. There is no analysis of the query, so if your query more more than a simple `?a ex:pred ?b`then you will run into incomplete inference.
+
+An example of a rule that will lead to incomplete inference results in the face of updates:
+
+    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+    @prefix sp: <http://spinrdf.org/sp#>.
+    @prefix spin: <http://spinrdf.org/spin#>.
+    @prefix ex: <http://example.org/>.
+
+    // if you are the parent of a parent of a child, that child is your grandchild.
+    ex:Person a rdfs:Class ;
+            spin:rule [
+                    a sp:Construct ;
+            sp:text """PREFIX ex: <http://example.org/>
+                       CONSTRUCT { ?this ex:grandchildOf ?grandparent . }
+                       WHERE { ?grandparent ex:parentOf/ex:parentOf ?this . }"""
+    ] .
+
+Removal of already infered data is only done when a statement is deleted. This means that the use of aggregation, negation og subselects (and possibly other cases) will lead to incorrect inference where old inferred statements will still remain in your data.
+
+An example of a rule with negation that will lead to incorrect (stale) inference:
+
+    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+    @prefix sp: <http://spinrdf.org/sp#>.
+    @prefix spin: <http://spinrdf.org/spin#>.
+    @prefix ex: <http://example.org/>.
+
+    // A child is an Only Child if their parent's have no other children
+    ex:Person a rdfs:Class ;
+            spin:rule [
+                    a sp:Construct ;
+            sp:text """PREFIX ex: <http://example.org/>
+                       CONSTRUCT { ?this a ex:OnlyChild . }
+                       WHERE { 
+                        ?parent ex:parentOf ?this . 
+                        FILTER( NOT EXISTS {?parent ex:parentOf ?otherChild. FILTER(?this != ?otherChild)} )
+                       
+                       }"""
+    ] .
+
+
 # Further reading
 
 Here are some useful links to learn more about SPIN:
