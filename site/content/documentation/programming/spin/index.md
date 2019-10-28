@@ -129,6 +129,8 @@ An example of a rule that will lead to incomplete inference results in the face 
                        WHERE { ?grandparent ex:parentOf/ex:parentOf ?this . }"""
     ] .
 
+If `ex:Peter ex:parentOf ex:PeterJr` and `ex:PeterJr a ex:Person`, then adding `ex:Selma ex:parentOf ex:Peter` will not lead to `ex:PeterJr ex:grandchildOf ex:Selma` being true because the SpinSail does not understand that adding `ex:Selma ex:parentOf ex:Peter` should trigger the rule for `ex:PeterJr`.
+
 Removal of already infered data is only done when a statement is deleted. This means that the use of aggregation, negation og subselects (and possibly other cases) will lead to incorrect inference where old inferred statements will still remain in your data.
 
 An example of a rule with negation that will lead to incorrect (stale) inference:
@@ -151,6 +153,15 @@ An example of a rule with negation that will lead to incorrect (stale) inference
                        }"""
     ] .
 
+Adding `ex:Peter ex:parentOf ex:PeterJr` and `ex:PeterJr a ex:Person` will lead to `ex:PeterJr a ex:OnlyChild`. This is correct. Adding `ex:Peter ex:parentOf ex:Caroline` means that `ex:PeterJr` should not be an Only Child anymore (according to the rule). `ex:PeterJr a ex:OnlyChild` will still be true even after adding `ex:Peter ex:parentOf ex:Caroline` because the SpinSail does not refresh already inferred data when there are no user-initiated deletions.
+
+# Performance
+
+Performance is largely dictated by how complex your rules and constraints are.
+
+Removing a statement will force all inferred data to be removed and reinferred. In the best case this will take a second or two on modern hardware, because even an empty SpinSail contains a number of default SPIN rules and constraints. Adding your own rules, constraints and data will only make this slower. 
+
+Disabling constraint validation will improve performance: `spinSail.setValidateConstraints(false)`
 
 # Further reading
 
