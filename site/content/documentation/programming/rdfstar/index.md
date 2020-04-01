@@ -3,7 +3,7 @@ title: "RDF* and SPARQL*"
 layout: "doc"
 ---
 
-Since release 3.2, RDF4J has (experimental) support for RDF*. RDF*
+Since release 3.2, RDF4J has (experimental) support for RDF\*. RDF\*
 and it companion SPARQL* are proposed extensions to the RDF and SPARQL standards (see [Olaf
 Hartig's position
 paper](https://blog.liu.se/olafhartig/2019/01/10/position-statement-rdf-star-and-sparql-star/) )
