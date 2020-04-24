@@ -445,23 +445,29 @@ FedX supports to use resolvable endpoints as federation members. These resolvabl
 
 Note that also hybrid combinations are possible.
 
-### Example 4: Local Federation with writable endpoint (NativeStore):
+### Example 5: Federation with writable endpoint:
 
-FedX support nominating a single federation member as being able to receive updates. If enabled, any statement add/remove operations, including SPARQL updates, will be forwarded on top of the nominated member:
+FedX supports nominating a single federation member as being able to receive updates. If enabled, any statement add/remove operations, including SPARQL updates, will be forwarded on top of the nominated member:
 
 ```
 @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
 @prefix fedx: <http://rdf4j.org/config/federation#> .
 
-<http://DBpedia> a sd:Service ;
+<http://myNativeStore> a sd:Service ;
 	fedx:store "NativeStore";
-	fedx:repositoryLocation "repositories\\native-storage.dbpedia36" ;
-        fedx:writable true .
+	fedx:repositoryLocation "repositories\\my-native-store" ;
+	fedx:writable true .
 
-<http://NYTimes> a sd:Service ;
-	fedx:store "NativeStore";
-	fedx:repositoryLocation "repositories\\native-storage.nytimes".
+<http://DBpedia> a sd:Service ;
+	fedx:store "SPARQLEndpoint";
+	sd:endpoint "http://dbpedia.org/sparql";
+	fedx:supportsASKQueries false .
 ```
+
+Notes:
+
+* If more than one endpoint is configured to be writable, FedX will select any at random for write operations
+* Any type of endpoint can be configured to be writable. For production settings it is best practice to use external repositories accessed as _ResolvableRepository_ or _SPARQLEndpoint_.
 
 ## Monitoring & Logging
 
