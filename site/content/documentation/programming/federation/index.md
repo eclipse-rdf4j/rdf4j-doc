@@ -432,6 +432,7 @@ DBpedia. Moreover note that for convenience the public DBpedia endpoint is autom
 
 ### Example 4: Federation with resolvable endpoints:
 
+
 FedX supports to use resolvable endpoints as federation members. These resolvable repositories are not managed by FedX, but are resolved using a provided _RepositoryResolver_. An example use case is to reference a repository managed by the RDF4J Server (i.e. from within the RDF4J workbench). Alternatively, any custom resolver can be provided to FedX during the initialization using the _FedXFactory_, e.g. a `LocalRepositoryManager`.
 
 ```
@@ -446,6 +447,8 @@ FedX supports to use resolvable endpoints as federation members. These resolvabl
 Note that also hybrid combinations are possible.
 
 ### Example 5: Federation with writable endpoint:
+
+(new in RDF4J 3.2.0) 
 
 FedX supports nominating a single federation member as being able to receive updates. If enabled, any statement add/remove operations, including SPARQL updates, will be forwarded on top of the nominated member:
 
