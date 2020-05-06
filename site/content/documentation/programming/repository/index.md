@@ -772,7 +772,7 @@ The following query is a typical example of a scoping issue. A very common issue
 
 {{< highlight sparql  >}}
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-SELECT ?friend ?name WHERE 
+SELECT * WHERE 
 {
     BIND(<http://example.com/peter> as ?person)
 	?person a foaf:Person .
@@ -789,7 +789,7 @@ The issue with this query is that each of the union clauses introduce a new scop
 variable `?friend`, however the results should not be the intersection of common values but rather union between "everyone that knows or is known by someone" 
 and "everyone 18 or older". The only exception here is that `?person` is used in the outer scope, so results from the inner union would be filtered to match 
 with bindings for `?person` from the outer scope. SPARQL is designed with bottom-up semantics, which means that inner sections should be evaluated before
-outer sections. This precisley so as to make scoping issues unambiguous.
+outer sections. This precisely so as to make scoping issues unambiguous.
 
 The query plan for the query gives us a lot of hints about how this becomes problematic.
 
