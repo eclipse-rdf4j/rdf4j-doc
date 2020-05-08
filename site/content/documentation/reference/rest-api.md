@@ -228,23 +228,25 @@ The payload supplied with this request is expected to contain an RDF document, c
 
 An example payload, containing a repository configuration for an in-memory store:
 
-    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-    @prefix rep: <http://www.openrdf.org/config/repository#>.
-    @prefix sr: <http://www.openrdf.org/config/repository/sail#>.
-    @prefix sail: <http://www.openrdf.org/config/sail#>.
-    @prefix ms: <http://www.openrdf.org/config/sail/memory#>.
+```turtle
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rep: <http://www.openrdf.org/config/repository#>.
+@prefix sr: <http://www.openrdf.org/config/repository/sail#>.
+@prefix sail: <http://www.openrdf.org/config/sail#>.
+@prefix ms: <http://www.openrdf.org/config/sail/memory#>.
 
-    [] a rep:Repository ;
-       rep:repositoryID "test" ;
-       rdfs:label "test memory store" ;
-       rep:repositoryImpl [
-          rep:repositoryType "openrdf:SailRepository" ;
-          sr:sailImpl [
-             sail:sailType "openrdf:MemoryStore" ;
-             ms:persist true ;
-             ms:syncDelay 120
-          ]
-       ].
+[] a rep:Repository ;
+   rep:repositoryID "test" ;
+   rdfs:label "test memory store" ;
+   rep:repositoryImpl [
+      rep:repositoryType "openrdf:SailRepository" ;
+      sr:sailImpl [
+	 sail:sailType "openrdf:MemoryStore" ;
+	 ms:persist true ;
+	 ms:syncDelay 120
+      ]
+   ].
+```
 
 # Repository removal
 
@@ -284,23 +286,26 @@ The payload supplied with POST request is expected to contain an RDF document, c
 
 An example payload, containing a repository configuration for an in-memory store:
 
-    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-    @prefix rep: <http://www.openrdf.org/config/repository#>.
-    @prefix sr: <http://www.openrdf.org/config/repository/sail#>.
-    @prefix sail: <http://www.openrdf.org/config/sail#>.
-    @prefix ms: <http://www.openrdf.org/config/sail/memory#>.
+```turtle
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix rep: <http://www.openrdf.org/config/repository#>.
+@prefix sr: <http://www.openrdf.org/config/repository/sail#>.
+@prefix sail: <http://www.openrdf.org/config/sail#>.
+@prefix ms: <http://www.openrdf.org/config/sail/memory#>.
 
-    [] a rep:Repository ;
-       rep:repositoryID "test" ;
-       rdfs:label "test memory store" ;
-       rep:repositoryImpl [
-          rep:repositoryType "openrdf:SailRepository" ;
-          sr:sailImpl [
-             sail:sailType "openrdf:MemoryStore" ;
-             ms:persist true ;
-             ms:syncDelay 120
-          ]
-       ].
+[] a rep:Repository ;
+   rep:repositoryID "test" ;
+   rdfs:label "test memory store" ;
+   rep:repositoryImpl [
+      rep:repositoryType "openrdf:SailRepository" ;
+      sr:sailImpl [
+	 sail:sailType "openrdf:MemoryStore" ;
+	 ms:persist true ;
+	 ms:syncDelay 120
+      ]
+   ].
+```
+
 # Repository statements
 
 The statements for a specific repository with ID `<ID>` are available at: `<RDF4J_URL>/repositories/<ID>/statements`
@@ -980,37 +985,33 @@ Response:
 
 The following tables summarizes the MIME types for various document formats that are relevant to this protocol.
 
-<table border=1 style="cellpadding: 4px">
-<tr><th colspan=2>MIME types for RDF format</th></tr>
-<tr><th>Format</th><th>MIME type</th></tr>
-<tr><td>RDF/XML</td><td>application/rdf+xml</td></tr>
-<tr><td>N-Triples</td><td>text/plain</td></tr>
-<tr><td>Turtle</td><td>text/turtle</td></tr>
-<tr><td>N3</td><td>text/rdf+n3</td></tr>
-<tr><td>N-Quads</td><td>text/x-nquads</td></tr>
-<tr><td>JSON-LD</td><td>application/ld+json</td></tr>
-<tr><td>RDF/JSON</td><td>application/rdf+json</td></tr>
-<tr><td>TriX</td><td>application/trix</td></tr>
-<tr><td>TriG</td><td>application/x-trig</td></tr>
-<tr><td>Rdf4j Binary RDF</td><td>application/x-binary-rdf</td></tr>
-</table>
+## MIME types for RDF formats
 
-<p>
+| Format           | MIME type                |
+|------------------|--------------------------|
+| RDF/XML          | application/rdf+xml      |
+| N-Triples        | text/plain               |
+| Turtle           | text/turtle              |
+| N3               | text/rdf+n3              |
+| N-Quads          | text/x-nquads            |
+| JSON-LD          | application/ld+json      |
+| RDF/JSON         | application/rdf+json     |
+| TriX             | application/trix         |
+| TriG             | application/x-trig       |
+| RDF4J Binary RDF | application/x-binary-rdf |
 
-<table border=1 style="cellpadding: 4px">
-<tr><th colspan=2>MIME types for variable binding formats</th></tr>
-<tr><th>Format</th><th>MIME type</th></tr>
-<tr><td>SPARQL Query Results XML Format</td><td>application/sparql-results+xml</td></tr>
-<tr><td>SPARQL Query Results JSON Format</td><td>application/sparql-results+json</td></tr>
-<tr><td>Binary RDF Results Table Format</td><td>application/x-binary-rdf-results-table</td></tr>
-</table>
+## MIME types for variable binding formats
 
-<p>
+| Format                    | MIME type                              |
+|---------------------------|----------------------------------------|
+| SPARQL Query Results XML  | application/sparq-results+xml          |
+| SPARQL Query Results JSON | application/sparq-results+json         |
+| Binary Results Format     | application/x-binary-rdf-results-table |
 
-<table border=1 style="cellpadding: 4px">
-<tr><th colspan=2>MIME types for boolean result formats</th></tr>
-<tr><th>Format</th><th>MIME type</th></tr>
-<tr><td>SPARQL Query Results XML Format</td><td>application/sparql-results+xml</td></tr>
-<tr><td>SPARQL Query Results JSON Format</td><td>application/sparql-results+json</td></tr>
-<tr><td>Plain Text Boolean Result Format</td><td>text/boolean</td></tr>
-</table>
+## MIME types for boolean result formats
+
+| Format                    | MIME type                      |
+|---------------------------|--------------------------------|
+| SPARQL Query Results XML  | application/sparq-results+xml  |
+| SPARQL Query Results JSON | application/sparq-results+json |
+| Plain Text Boolean Result | text/boolean                   |

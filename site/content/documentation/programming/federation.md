@@ -28,7 +28,7 @@ The examples query data from http://dbpedia.org/ and join it with data from http
 
 _Retrieve the European Union countries from DBpedia and join it with the GDP data coming from Wikidata_
 
-```
+```sparql
 SELECT * WHERE { 
   ?country a yago:WikicatMemberStatesOfTheEuropeanUnion .
   ?country owl:sameAs ?countrySameAs . 
@@ -43,7 +43,7 @@ Note that the query is a bit artificial, however, it illustrates quite well the 
 
 The following Java code can be used to execute our example query against the federation. 
 
-```
+```java
 Repository repository = FedXFactory.newFederation()
 	.withSparqlEndpoint("http://dbpedia.org/sparql")
 	.withSparqlEndpoint("https://query.wikidata.org/sparql")
@@ -96,17 +96,17 @@ The RDF4J workbench offers a UI for creating a federation:
 4. Pick the federation members from the list of managed repositories
 5. Save and explore the federation
 
-See <a href="/documentation/tools/server-workbench/#federation">RDF4J Workbench Federation</a> for further information.
+See [RDF4J Workbench Federation](/documentation/tools/server-workbench/#federation) for further information.
 
 ### Advanced federation using a repository config template
 
-Repositories in the workbench can also be created using <a href="/documentation/tools/repository-configuration/">Repository configuration templates</a>.
+Repositories in the workbench can also be created using [Repository configuration templates](/documentation/tools/repository-configuration/).
 
-Also a FedX federation can be configured using such template and deployed in the <a href="/documentation/tools/server-workbench/#repository-configuration">RDF4J server</a>.
+Also a FedX federation can be configured using such template and deployed in the [RDF4J Server](/documentation/tools/server-workbench/#repository-configuration).
 
 The following snippet depicts an example repository configuration that defines a federation over the repositories _my-repository-1_ and _my-repository-2_. The actual repositories of the federation members are managed by the RDF4J server.
 
-```
+```turtle
 #
 # RDF4J configuration template for a FedX Repository
 #
@@ -131,7 +131,7 @@ The following snippet depicts an example repository configuration that defines a
 ```
 
 
-In order to deploy a FedX configuration the repository configuration template needs to be placed in a `config.ttl` file in the RDF4J application dir. The full location is `[Rdf4j_DATA]/server/repositories/[REPOSITORY_ID]/config.ttl`, see <a href="/documentation/tools/server-workbench/#repository-configuration">here</a> for further details.
+In order to deploy a FedX configuration the repository configuration template needs to be placed in a `config.ttl` file in the RDF4J application dir. The full location is `[Rdf4j_DATA]/server/repositories/[REPOSITORY_ID]/config.ttl`, see [here](/documentation/tools/server-workbench/#repository-configuration) for further details.
 
 ## FedX in Java Applications
 
@@ -143,11 +143,10 @@ Basically, FedX can be used and accessed using the SAIL architecture (see the [R
 
 In the following example, we configure a federation with the publicly available DBpedia and SemanticWebDogFood SPARQL endpoints. Please refer to Configuring FedX for details.
 
-```
+```java
 Repository repo = FedXFactory.createSparqlFederation(Arrays.asList(
 			"http://dbpedia.org/sparql",
 			"http://data.semanticweb.org/sparql"));
-repo.init();
 
 String q = "PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;\n"
 	+ "PREFIX dbpedia-owl: &lt;http://dbpedia.org/ontology/&gt;\n"
@@ -170,16 +169,13 @@ System.out.println("Done.");
 System.exit(0);
 ```
 
-
-
 **Example 2: Using a data configuration file**
 
 In this example we use a data configuration file to set up the federation members (see section on member configuration below for more details). Note that in this example we use an initialized Repository to create the query, as well as the connection. 
 
-```
+```java
 File dataConfig = new File("local/dataSourceConfig.ttl");
 Repository repo = FedXFactory.createFederation(dataConfig);
-repo.init();
 
 String q = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 	+ "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/>\n"
@@ -202,19 +198,16 @@ System.out.println("Done.");
 System.exit(0);
 ```
 
-
-
 **Example 3: Setting up FedX using the Endpoint utilities**
 
 This example shows how to setup FedX using a mechanism to include dynamic endpoints.
 
-```
+```java
 List<Endpoint> endpoints = new ArrayList<>();
 endpoints.add( EndpointFactory.loadSPARQLEndpoint("dbpedia", "http://dbpedia.org/sparql"));
 endpoints.add( EndpointFactory.loadSPARQLEndpoint("swdf", "http://data.semanticweb.org/sparql"));
 
 Repository repo = FedXFactory.createFederation(endpoints);
-repo.init();
 
 String q = "PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;\n"
 	+ "PREFIX dbpedia-owl: &lt;http://dbpedia.org/ontology/&gt;\n"
@@ -224,7 +217,6 @@ String q = "PREFIX rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;\n"
 
 TupleQuery query = QueryManager.prepareTupleQuery(q);
 try (TupleQueryResult res = query.evaluate()) {
-
 	while (res.hasNext()) {
 		System.out.println(res.next());
 	}
@@ -241,7 +233,7 @@ This example shows how repositories from a remote RDF4J server can be easily use
 
 Similarly of course a `LocalRepositoryManager` or any other construct implementing the `RepositoryResolver` interface can be used.
 
-```
+```java
 // connection URL of a RDF4J server which manages the repositories
 String serverUrl = "http://localhost:8080/rdf4j-server";
 RepositoryManager repoManager = new RemoteRepositoryManager(serverUrl);
@@ -253,8 +245,6 @@ Repository repo = FedXFactory.newFederation()
 		.withResolvableEndpoint("my-repository-2")
 		.create();
 
-repo.init();
-
 try (RepositoryConnection conn = repo.getConnection()) {
 	try (RepositoryResult<Statement> repoResult = conn.getStatements(null, RDF.TYPE, FOAF.PERSON)) {
 		repoResult.forEach(st -> System.out.println(st));
@@ -265,7 +255,6 @@ repo.shutDown();
 repoManager.shutDown();
 ```
 
-
 ## Federation Management
 
 FedX federations can be managed both at initialization and at runtime. This is possible since FedX is capable of on-demand federation setup, meaning that we do not require any prior knowledge about data sources.
@@ -273,7 +262,6 @@ FedX federations can be managed both at initialization and at runtime. This is p
 The federation can be controlled at runtime using the _FederationManager_. This class provides all means for interacting with the federation at runtime, e.g. adding or removing federation members.
 
 Endpoints can be added to the federation using the methods `addEndpoint(Endpoint)` and removed with `removeEndpoint(endpoint)`. Note that new endpoints can be initialized using the endpoint Management facilities.
-
 
 ## Endpoint Management
 
@@ -283,7 +271,7 @@ In FedX we provide support methods to create _Endpoints_ for SPARQL endpoints, R
 
 **Example: Using the endpoint Manager to create endpoints**
 
-```
+```java
 Config.initialize();
 List<Endpoint> endpoints = new ArrayList<>();
 
@@ -301,35 +289,26 @@ FedXFactory.initializeFederation(endpoints);
 
 For details about the methods please refer to the javadoc help of the class _EndpointFactory_
 
-
 **Note:** With the Endpoint mechanism it is basically possible to support any kind of Repository of SAIL implementation as federation member. For documentation consider the javadoc, in particular _EndpointFactory_ and  _EndpointProvider_.
-
 
 ## FedX configuration
 
 FedX provides various means for configuration. Configuration settings can be defined using the `FedXConfig` facility, which can be passed at initialization time. Note that certain settings can also be changed during runtime, please refer to the API documentation for details. 
 
-
-
 ### Available Properties
 
-
-<table border=1 style="cellpadding: 4px;">
-<tr><th>Property</th><th>Description</th></tr>
-<tr><td>prefixDeclarations</td><td>Path to prefix declarations file, see PREFIX Declarations</td></tr>
-<tr><td>cacheLocation</td><td>Location where the memory cache gets persisted at shutdown, default <i>cache.db</i></td></tr>
-<tr><td>joinWorkerThreads</td><td>The number of join worker threads for parallelization, default <i>20</i></td></tr>
-<tr><td>unionWorkerThreads</td><td>The number of union worker threads for parallelization, default <i>20</i></td></tr>
-<tr><td>boundJoinBlockSize</td><td>Block size for bound joins, default <i>15</i></td></tr>
-<tr><td>enforceMaxQueryTime</td><td>Max query time in seconds, 0 to disable, default <i>30</i></td></tr>
-<tr><td>enableServiceAsBoundJoin</td><td>Flag for evaluating a SERVICE expression (contacting non-federation members) using vectored evaluation, default <i>true</i>. For today's endpoints it is more efficient to disable vectored evaluation of SERVICE</td></tr>
-<tr><td>debugQueryPlan</td><td>Print the optimized query execution plan to stdout, default <i>false</i></td></tr>
-<tr><td>enableMonitoring</td><td>Flag to enable/disable monitoring features, default <i>false</i></td></tr>
-<tr><td>logQueryPlan</td><td>Flag to enable/disable query plan logging via Java class <i>QueryPlanLog</i>, default <i>false</i></td></tr>
-<tr><td>logQueries</td><td>Flag to enable/disable query logging via <i>QueryLog</i>, default <i>false</i>. The <i>QueryLog</i> facility allows to log all queries to a file</td></tr>
-</table>
-
-
+|Property | Description |
+|prefixDeclarations | Path to prefix declarations file, see PREFIX Declarations | 
+|cacheLocation | Location where the memory cache gets persisted at shutdown, default _cache.db_ | 
+|joinWorkerThreads | The number of join worker threads for parallelization, default _20_ | 
+|unionWorkerThreads | The number of union worker threads for parallelization, default _20_ | 
+|boundJoinBlockSize | Block size for bound joins, default _15_ | 
+|enforceMaxQueryTime | Max query time in seconds, 0 to disable, default _30_ | 
+|enableServiceAsBoundJoin | Flag for evaluating a SERVICE expression (contacting non-federation members) using vectored evaluation, default _true_. For today's endpoints it is more efficient to disable vectored evaluation of SERVICE | 
+|debugQueryPlan | Print the optimized query execution plan to stdout, default _false_ | 
+|enableMonitoring | Flag to enable/disable monitoring features, default _false_ | 
+|logQueryPlan | Flag to enable/disable query plan logging via Java class _QueryPlanLog_, default _false_ | 
+|logQueries | Flag to enable/disable query logging via _QueryLog_, default _false_. The _QueryLog_ facility allows to log all queries to a file | 
 
 ### Query timeouts
 
@@ -338,7 +317,6 @@ FedX supports to define the maximum execution time for a query. This can be set 
 Note that the query engine attempts to abort any running evaluation of a subquery when the maximum execution time has reached.
 
 If a query timeout occurs, a _QueryInterruptedException_ is thrown.
-
 
 ### Prefix declarations
 
@@ -366,7 +344,7 @@ dbpedia=http://dbpedia.org/ontology/
 
 The QueryManager can be used to define additional prefixes at runtime.
 
-```
+```java
 QueryManager qm = repo.getQueryManager();
 qm.addPrefixDeclaration("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 qm.addPrefixDeclaration("dbpedia", "http://dbpedia.org/ontology/");
@@ -379,7 +357,7 @@ Federation members can be added to a federation either directly as a list of end
 
 ### Example 1: SPARQL Federation:
 
-```
+```turtle
 @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
 @prefix fedx: <http://rdf4j.org/config/federation#> .
 
@@ -402,7 +380,7 @@ DBpedia. Moreover note that for convenience the public DBpedia endpoint is autom
 
 ### Example 2: SPARQL Federation with RDF4J remote repositories
 
-```
+```turtle
 @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
 @prefix fedx: <http://rdf4j.org/config/federation#> .
 
@@ -414,7 +392,7 @@ DBpedia. Moreover note that for convenience the public DBpedia endpoint is autom
 
 ### Example 3: Local Federation (NativeStore):
 
-```
+```turtle
 @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
 @prefix fedx: <http://rdf4j.org/config/federation#> .
 
@@ -433,7 +411,7 @@ DBpedia. Moreover note that for convenience the public DBpedia endpoint is autom
 
 FedX supports to use resolvable endpoints as federation members. These resolvable repositories are not managed by FedX, but are resolved using a provided _RepositoryResolver_. An example use case is to reference a repository managed by the RDF4J Server (i.e. from within the RDF4J workbench). Alternatively, any custom resolver can be provided to FedX during the initialization using the _FedXFactory_, e.g. a `LocalRepositoryManager`.
 
-```
+```turtle
 @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
 @prefix fedx: <http://rdf4j.org/config/federation#> .
 
@@ -450,7 +428,7 @@ Note that also hybrid combinations are possible.
 
 FedX supports nominating a single federation member as being able to receive updates. If enabled, any statement add/remove operations, including SPARQL updates, will be forwarded on top of the nominated member:
 
-```
+```turtle
 @prefix sd: <http://www.w3.org/ns/sparql-service-description#> .
 @prefix fedx: <http://rdf4j.org/config/federation#> .
 
@@ -491,7 +469,7 @@ a) by setting _debugQueryPlan=true_, the query plan is printed to stdout (which 
 
 b) by setting _logQueryPlan=true_ the optimized query plan is written to a variable local to the executing thread.The optimized query plan can be retrieved via the _QueryPlanLog_ service, as illustrated in the following abstract snippet.
  
-```
+```java
 FedXConfig config = new FedXConfig().withEnableMonitoring(true).withLogQueryPlan(true);
 Repository repo = FedXFactory.newFederation()
 		.withSparqlEndpoint("http://dbpedia.org/sparql")
@@ -515,14 +493,13 @@ available information can be retrieved by the _MonitoringService_, which can be 
 
 The following snippet illustrates a monitoring utility that prints all monitoring information to stdout.
 
-```
+```java
 FedXConfig config = new FedXConfig().withEnableMonitoring(true).withLogQueryPlan(true);
 FedXRepository repo = FedXFactory.newFederation()
 		.withSparqlEndpoint("http://dbpedia.org/sparql")
 		.withSparqlEndpoint("https://query.wikidata.org/sparql")
 		.withConfig(config)
 		.create();
-repo.init();
 
 TupleQuery query = ...
 

@@ -14,28 +14,31 @@ Here, we are going to implement a boolean function that detects if some string l
 
 Suppose we have the following RDF data:
 
-    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
-    @prefix ex: <http://example.org/> .
+```turtle
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix ex: <http://example.org/> .
 
-    ex:a rdfs:label "step on no pets" .
-    ex:b rdfs:label "go on, try it" .
+ex:a rdfs:label "step on no pets" .
+ex:b rdfs:label "go on, try it" .
+```
 
 We would like to be able to formulate a SPARQL query that allows us to retrieve all resources that have a palindrome as their label:
 
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
-    PREFIX cfn: <http://example.org/custom-function/>
-    SELECT ?x ?label
-    WHERE {
-       ?x rdfs:label ?label .
-       FILTER(cfn:palindrome(str(?label)))
-    }
+```sparql
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+PREFIX cfn: <http://example.org/custom-function/>
+SELECT ?x ?label
+WHERE {
+   ?x rdfs:label ?label .
+   FILTER(cfn:palindrome(str(?label)))
+}
+```
 
 The expected result of this query, given the above data, would be:
 
-<table border=1 cellpadding=2 style="border: solid 1px">
-<tr><th><code>x</code></th><th><code>label</code></th></tr>
-<tr><td><code>ex:a</code></td><td><code>"step on no pets"</code></td></tr>
-</table>
+| x      | label               |
+|--------|---------------------|
+| `ex:a` | `"step on no pets"` |
 
 Unfortunately, the function `cfn:palindrome` is not a standard SPARQL function, so this query won’t work: the RDF4J SPARQL engine will simply report an error. 
 
@@ -50,101 +53,101 @@ There’s two basic steps in adding custom functions to RDF4J:
 
 In the RDF4J SPARQL engine, functions are expected to implement the {{< javadoc "Function" "/query/algebra/evaluation/Function.html" >}} interface.
 
-{{< highlight java "linenos=table" >}}
+```java
 package org.eclipser.rdf4j.examples.function;
 import org.eclipse.rdf4j.query.algebra.evaluation.function.Function;
 
 public class PalindromeFunction implements Function { }
-{{< / highlight >}}
+```
 
 The `Function` interface defines two methods: `evaluate()` and `getURI()`. The latter of these is a simple method that returns a string representation of the URI of the function:
 
-{{< highlight java "linenos=table" >}}
-    // define a constant for the namespace of our custom function
-    public static final String NAMESPACE = "http://example.org/custom-function/";
+```java
+// define a constant for the namespace of our custom function
+public static final String NAMESPACE = "http://example.org/custom-function/";
 
-    /**
-     * return the URI 'http://example.org/custom-function/palindrome' as a String
-     */
-    public String getURI() {
-        return NAMESPACE + "palindrome";
-    }
-{{< / highlight >}}
+/**
+ * return the URI 'http://example.org/custom-function/palindrome' as a String
+ */
+public String getURI() {
+    return NAMESPACE + "palindrome";
+}
+```
 
 The real proof of the pudding is in the `evaluate()` method: this is where the function logic is implemented. In other words, in this method we check the incoming value to see if it is, first of all, a valid argument for the function, and second of all, a palindrome, and return the result. 
 
 {{< example "Example 1" "function/PalindromeFunction.java" >}} show how we put everything together:
 
-{{< highlight java "linenos=table" >}}
-    package org.eclipse.rdf4j.examples.function;
+```java
+package org.eclipse.rdf4j.examples.function;
 
-    import org.eclipse.rdf4j.model.Literal;
-    import org.eclipse.rdf4j.model.Value;
-    import org.eclipse.rdf4j.model.ValueFactory;
-    import org.eclipse.rdf4j.query.algebra.evaluation.ValueExprEvaluationException;
-    import org.eclipse.rdf4j.query.algebra.evaluation.function.Function;
+import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.query.algebra.evaluation.ValueExprEvaluationException;
+import org.eclipse.rdf4j.query.algebra.evaluation.function.Function;
+
+/**
+ * An example custom SPARQL function that detects palindromes
+ * 
+ * @author Jeen Broekstra
+ */
+public class PalindromeFunction implements Function {
+
+    // define a constant for the namespace of our custom function
+    public static final String NAMESPACE = "http://example.org/custom-function/";
 
     /**
-     * An example custom SPARQL function that detects palindromes
-     * 
-     * @author Jeen Broekstra
+     * return the URI 'http://example.org/custom-function/palindrome' as a
+     * String
      */
-    public class PalindromeFunction implements Function {
-
-        // define a constant for the namespace of our custom function
-        public static final String NAMESPACE = "http://example.org/custom-function/";
-
-        /**
-         * return the URI 'http://example.org/custom-function/palindrome' as a
-         * String
-         */
-        public String getURI() {
-            return NAMESPACE + "palindrome";
-        }
-
-        /**
-         * Executes the palindrome function.
-         *
-         * @return A boolean literal representing true if the input argument is a
-         *         palindrome, false otherwise.
-         * @throws ValueExprEvaluationException
-         *         if more than one argument is supplied or if the supplied argument
-         *         is not a literal.
-         */
-        public Value evaluate(ValueFactory valueFactory, Value... args)
-            throws ValueExprEvaluationException
-            {
-                // our palindrome function expects only a single argument, so throw an error
-                // if there's more than one
-                if (args.length != 1) {
-                    throw new ValueExprEvaluationException(
-                            "palindrome function requires" 
-                            + "exactly 1 argument, got "
-                            + args.length);
-                }
-                Value arg = args[0];
-                // check if the argument is a literal, if not, we throw an error
-                if (!(arg instanceof Literal)) {
-                    throw new ValueExprEvaluationException(
-                            "invalid argument (literal expected): " + arg);
-                }
-
-                // get the actual string value that we want to check for palindrome-ness.
-                String label = ((Literal)arg).getLabel();
-                // we invert our string
-                String inverted = "";
-                for (int i = label.length() - 1; i >= 0; i--) {
-                    inverted += label.charAt(i);
-                }
-                // a string is a palindrome if it is equal to its own inverse
-                boolean palindrome = inverted.equalsIgnoreCase(label);
-
-                // a function is always expected to return a Value object, so we
-                // return our boolean result as a Literal
-                return valueFactory.createLiteral(palindrome);
-            }
+    public String getURI() {
+	return NAMESPACE + "palindrome";
     }
-{{< / highlight >}}
+
+    /**
+     * Executes the palindrome function.
+     *
+     * @return A boolean literal representing true if the input argument is a
+     *         palindrome, false otherwise.
+     * @throws ValueExprEvaluationException
+     *         if more than one argument is supplied or if the supplied argument
+     *         is not a literal.
+     */
+    public Value evaluate(ValueFactory valueFactory, Value... args)
+	throws ValueExprEvaluationException
+	{
+	    // our palindrome function expects only a single argument, so throw an error
+	    // if there's more than one
+	    if (args.length != 1) {
+		throw new ValueExprEvaluationException(
+			"palindrome function requires" 
+			+ "exactly 1 argument, got "
+			+ args.length);
+	    }
+	    Value arg = args[0];
+	    // check if the argument is a literal, if not, we throw an error
+	    if (!(arg instanceof Literal)) {
+		throw new ValueExprEvaluationException(
+			"invalid argument (literal expected): " + arg);
+	    }
+
+	    // get the actual string value that we want to check for palindrome-ness.
+	    String label = ((Literal)arg).getLabel();
+	    // we invert our string
+	    String inverted = "";
+	    for (int i = label.length() - 1; i >= 0; i--) {
+		inverted += label.charAt(i);
+	    }
+	    // a string is a palindrome if it is equal to its own inverse
+	    boolean palindrome = inverted.equalsIgnoreCase(label);
+
+	    // a function is always expected to return a Value object, so we
+	    // return our boolean result as a Literal
+	    return valueFactory.createLiteral(palindrome);
+	}
+}
+```
 
 You are completely free to implement your function logic: in the above example, we have created a function that only returns `true` or `false`, but since the actual return type of an RDF4J function is {{< javadoc "Value" "model/Value.html" >}}, you can create functions that return string literals, numbers, dates, or even IRIs or blank nodes.
 

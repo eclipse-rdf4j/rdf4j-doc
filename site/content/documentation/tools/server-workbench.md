@@ -20,9 +20,9 @@ We recommend using a recent, stable version of [Apache Tomcat](https://tomcat.ap
 
 RDF4J Server is a database management application: it provides HTTP access to RDF4J repositories, exposing them as SPARQL endpoints. RDF4J Server is meant to be accessed by other applications. Apart from some functionality to view the server’s log messages, it doesn’t provide any user oriented functionality. Instead, the user oriented functionality is part of RDF4J Workbench. The Workbench provides a web interface for querying, updating and exploring the repositories of an RDF4J Server.
 
-If you have not done so already, you will first need to <a href="/download">download the RDF4J SDK</a>. Both RDF4J Server and RDF4J Workbench can be found in the `war` directory of the SDK. The war-files in this directory need to be deployed in a Java Servlet Container. The deployment process is container-specific, please consult the documentation for your container on how to deploy a web application. For Apache Tomcat, we recommend using the [Tomcat Manager](https://tomcat.apache.org/tomcat-9.0-doc/manager-howto.html) to make deployment easier.
+If you have not done so already, you will first need to [download the RDF4J SDK](/download). Both RDF4J Server and RDF4J Workbench can be found in the `war` directory of the SDK. The war-files in this directory need to be deployed in a Java Servlet Container. The deployment process is container-specific, please consult the documentation for your container on how to deploy a web application. For Apache Tomcat, we recommend using the [Tomcat Manager](https://tomcat.apache.org/tomcat-9.0-doc/manager-howto.html) to make deployment easier.
 
-After you have deployed the RDF4J Workbench webapp, you should be able to access it, by default, at path <a href="http://localhost:8080/rdf4j-workbench">http://localhost:8080/rdf4j-workbench</a>. You can point your browser at this location to verify that the deployment succeeded.
+After you have deployed the RDF4J Workbench webapp, you should be able to access it, by default, at path `http://localhost:8080/rdf4j-workbench`. You can point your browser at this location to verify that the deployment succeeded.
 
 ## Configuring RDF4J Workbench for UTF-8 Support
 
@@ -51,11 +51,11 @@ One easy way to find out what the directory is in a running instance of the RDF4
 
 Each repository in RDF4J Server stores both its configuration and the actual persisted data in the application dir. The location is `[RDF4J_DATA]/server/repositories/[REPOSITORY_ID]`. The configuration is stored as a file `config.ttl` in that directory. The other files in this directory represent stored data, indexes and other files that the database needs to persist its data (in other words: best don't touch).
 
-The easiest way to create and manage repositories on an RDF4J Server to use the <a href="/documentation/tools/console/">RDF4J Console</a> or RDF4J Workbench. Both offer commands to quickly create a new repository and guide you through the various configuration options. 
+The easiest way to create and manage repositories on an RDF4J Server to use the [RDF4J Console](/documentation/tools/console) or RDF4J Workbench. Both offer commands to quickly create a new repository and guide you through the various configuration options. 
 
 However, you can also directly edit the `config.ttl` of your repository to change its configuration. For example, you can use this to change the repository name as it is shown in the Workbench, or perhaps to change configuration parameters, or change the repository type. However, proceed with caution: if you make a mistake, your repository may become unreadable until after you've rectified the mistake. Also note that if you change the actual store type (e.g. switching from a memory store to a native store), it _won't_ migrate your existing data to the new store configuration!
 
-More information can be found in the <a href="/documentation/tools/repository-configuration/">Repository configuration and templates</a> section of the documentation.
+More information can be found in the [Repository configuration and templates](/documentation/tools/repository-configuration/) section of the documentation.
 
 ## Logging Configuration
 
@@ -85,18 +85,18 @@ The deployment descriptor defines:
 
 To enable authentication, add the following XML element to `web.xml` inside the `<web-app>` element:
 
-{{< highlight xml >}}
+```xml
     <login-config>
         <auth-method>BASIC</auth-method>
         <realm-name>rdf4j</realm-name>
     </login-config>
-{{< / highlight >}}
+```
 
 Security constraints associate operations (URL pattern plus HTTP method) with security roles. Both security constraints and security roles are nested in the `<web-app>` element.
 
 A security constraint minimally consists of a collection of web resources (defined in terms of URL patterns and HTTP methods) and an authorisation constraint (the role name that has access to the resource collection). Some example security constraints are shown below:
 
-{{< highlight xml >}}
+```xml
 <security-constraint>
     <web-resource-collection>
         <web-resource-name>SPARQL query access to the 'test' repository</web-resource-name>
@@ -136,11 +136,11 @@ A security constraint minimally consists of a collection of web resources (defin
         <role-name>editor</role-name>
     </auth-constraint>
 </security-constraint>
-{{< / highlight >}}
+```
 
 The ability to create and delete repositories requires access to the SYSTEM repository. An administrator security constraint for this looks like the following:
 
-{{< highlight xml >}}
+```xml
 <security-constraint>
     <web-resource-collection>
         <web-resource-name>Administrator access to SYSTEM</web-resource-name>
@@ -155,11 +155,11 @@ The ability to create and delete repositories requires access to the SYSTEM repo
         <role-name>administrator</role-name>
     </auth-constraint>
 </security-constraint>
-{{< / highlight >}}
+```
 
 Also nested inside the `<web-app>` element are definitions of security roles. The format is shown by the example:
 
-{{< highlight xml >}}
+```xml
 <security-role>
     <description>
         Read only access to repository data
@@ -180,7 +180,7 @@ Also nested inside the `<web-app>` element are definitions of security roles. Th
     </description>
     <role-name>administrator</role-name>
 </security-role>
-{{< / highlight >}}
+```
 
 ## User accounts
 
@@ -188,41 +188,30 @@ Tomcat has a number of ways to manage user accounts. The different techniques ar
 
 For the default security realm, usernames and passwords are stored in the file `tomcat-users.xml` in the Tomcat configuration directory, usually `/etc/tomcat/tomcat-users.xml` on Linux systems. To add user accounts, add `<user>` elements inside the `<tomcat-users>` element, for example:
 
-{{< highlight xml >}}
+```xml
 <user username="adam" password="secret" roles="viewer" />
 <user username="eve" password="password" roles="viewer,editor,administrator" />
-{{< / highlight >}}
+```
 
 ## Programmatic authentication
 
 To use a remote repository where authentication has been enabled, it is necessary to provide the username and password to the RDF4J API. Remote repositories are usually accessed via the {{< javadoc "RemoteRepositoryManager" "repository/manager/RemoteRepositoryManager.html" >}} class. Tell the repository manager what the security credentials are using the following method:
 
-{{< highlight java >}}
+```java
 void setUsernameAndPassword(String username, String password)
-{{< / highlight >}}
+```
 
 Alternatively, they can be passed in the factory method:
 
-{{< highlight java >}}
+```java
 static RemoteRepositoryManager getInstance(String serverURL, String username, String password)
-{{< / highlight >}}
+```
 
 # RDF4J Workbench
 
 This chapter describes the RDF4J Workbench, a web application for interacting with RDF4J and/or other SPARQL endpoints.
 
 This chapter will refer to URLs on a local server served from port 8080, which is possibly the most common “out-of-the-box” configuration. That is, Workbench URLs will start with `http://localhost:8080/`.
-
-# Browser Client Support
-
-Browser Client Support Matrix
-
-<table border=1 style="cellpadding: 4px;">
-<tr><th>Browser</th><th>Fully Working Versions</th><th>Non-working Versions</th></tr>
-<tr><td>Firefox</td><td> Any recent</td><td> </td></tr>
-<tr><td>Chrome </td><td> Any recent</td><td>	</td></tr>
-<tr><td>Internet Explorer</td><td> 8.0, 9.0 (Compatibility View),  10.0 (Compatibility View)</td><td> 9.0 (Other modes/views), 10.0 (Other modes/views)</td></tr>
-</table>
 
 # Getting Started
 
@@ -421,17 +410,17 @@ Your data will only be committed if it passes validation.
 
 ## Supported features and more info
 
-For a list of supported features and more info on how to use SHACL - see <a href="/documentation/programming/shacl/">Programming with SHACL</a>.
+For a list of supported features and more info on how to use SHACL - see [Programming with SHACL](/documentation/programming/shacl/).
 
 
 # Federation
 
 NOTE: new in RDF4J 3.1
 
-RDF4J integrates federation support using the <a href="/documentation/programming/federation/">FedX engine</a>.
+RDF4J integrates federation support using the [FedX engine](/documentation/programming/federation/).
 
 A federation can be configured from the RDF4J Workbench UI by picking the federation members. Once configured it can be used to explore or query the data of the federation members as a virtually integrated graph.
 
-<img src="images/createFederation.png" alt="Create Federation" class="img-responsive"/>
+![Create Federation](../images/createFederation.png)
 
-See <a href="/documentation/programming/federation/">Federation with FedX</a> for more information.
+See [Federation with FedX](/documentation/programming/federation/) for more information.
