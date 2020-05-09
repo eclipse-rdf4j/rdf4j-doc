@@ -8,10 +8,6 @@ themesDir = "themes/"
 # disableKinds = ["taxonomy", "taxonomyTerm"]
 pygmentsStyle = "github"
 
-[blackfriday]
-  plainIDAnchors = true
-  hrefTargetBlank = true
-
 [Params]
   google_tag_manager = ""
   description = "Eclipse rdf4j: Scalable RDF for Java developers."
@@ -69,3 +65,20 @@ pygmentsStyle = "github"
     endLevel = 3
     ordered = false
     startLevel = 1   
+  [markup.goldmark]
+    [markup.goldmark.extensions]
+      definitionList = true
+      footnote = true
+      linkify = true
+      strikethrough = true
+      table = true
+      taskList = true
+      typographer = true
+    [markup.goldmark.parser]
+      attribute = true
+      autoHeadingID = true
+      autoHeadingIDType = "github"
+    [markup.goldmark.renderer]
+      hardWraps = false
+      unsafe = true
+      xhtml = false
