@@ -3,7 +3,7 @@
     {{ if .Sections }}
       {{ range .Sections.ByWeight }}
       <div class="doc-section">
-      <h3 class="doc-section-header"><a href="{{ .Permalink | relURL }}">{{ .Title }}</a></h3>
+      <h4 class="doc-section-header"><a href="{{ .Permalink | relURL }}">{{ .Title }}</a></h4>
       <div class="doc-section-content">
         {{ .Content }}
           <ul>  

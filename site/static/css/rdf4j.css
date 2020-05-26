@@ -38,14 +38,17 @@ td,th {
 div.doc-section {
 }
 
-h3.doc-section-header {
+h4.doc-section-header {
+  margin-top: 20px;
   margin-bottom: 0px;
 }
+
 .doc-section-header a:link, .doc-section-header a:visited {
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   font-weight: medium;
   background: #DA5800;
+  padding-top: 2px;
   padding-left: 20px;
   padding-right: 20px;
   color: black;
