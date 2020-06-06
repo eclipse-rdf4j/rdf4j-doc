@@ -21,14 +21,15 @@ stores.
 The DynamicModel has a large effect on the transaction isolation overhead in
 the MemoryStore. Typical transaction isolation added roughly 100% overhead when
 adding data to the store, with the introduction of the DynamicModel this has
-been reduced to 25% as long as there are no queries that cause the DynamicModel
+been reduced to 25% as long, as there are no queries that cause the DynamicModel
 to upgrade to a full LinkedHashModel.
 
-When compared to the latest 3.1 release, Refinements to how `connection.remove(...)` executes on the MemoryStore makes
-it 40% faster for bulk transactions (`IsolationLevels.NONE`) and up to 8x
-faster for higher transaction levels. These changes were already introduced to
-the NativeStore in 3.1.0 which at the time made `connection.remove(...)`
-approximately 14x faster when using IsolationLevels.NONE.
+When compared to the latest 3.1 release, refinements to how
+`connection.remove(...)` executes on the MemoryStore makes it 40% faster for
+bulk transactions (`IsolationLevels.NONE`) and up to 8 times faster for higher
+transaction levels. These changes were already introduced to the NativeStore in
+3.1.0 which at the time made `connection.remove(...)` approximately 14 times faster
+when using IsolationLevels.NONE.
 
 NativeStore has received three upgrades in this release. Predictive reads,
 dynamic caching and lower IO for transactions. This gives us around a 15%
@@ -38,6 +39,3 @@ example is `SELECT DISTINCT ?p WHERE {?s ?p ?o}`. The dynamic caching will help
 with all queries in general and adapts to the amount of available RAM.
 Typically the dynamic cache uses around 2 GB of RAM for a NativeStore with 250
 million triples.
-
-<div class="attribution">
-</div>
