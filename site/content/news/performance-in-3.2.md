@@ -24,6 +24,8 @@ adding data to the store, with the introduction of the DynamicModel this has
 been reduced to 25% as long, as there are no queries that cause the DynamicModel
 to upgrade to a full LinkedHashModel.
 
+# TODO explain what kind of queries would cause the upgrade.
+
 When compared to the latest 3.1 release, refinements to how
 `connection.remove(...)` executes on the MemoryStore makes it 40% faster for
 bulk transactions (`IsolationLevels.NONE`) and up to 8 times faster for higher
@@ -31,7 +33,7 @@ transaction levels. These changes were already introduced to the NativeStore in
 3.1.0 which at the time made `connection.remove(...)` approximately 14 times faster
 when using IsolationLevels.NONE.
 
-NativeStore has received three upgrades in this release. Predictive reads,
+NativeStore has received three upgrades in the 3.2 release: predictive reads,
 dynamic caching and lower IO for transactions. This gives us around a 15%
 higher transaction throughput for small transactions. Predictive reads and
 dynamic caching make queries that read a lot of data up to 70% faster, a good
@@ -39,3 +41,7 @@ example is `SELECT DISTINCT ?p WHERE {?s ?p ?o}`. The dynamic caching will help
 with all queries in general and adapts to the amount of available RAM.
 Typically the dynamic cache uses around 2 GB of RAM for a NativeStore with 250
 million triples.
+
+# TODO perhaps explain in a bit more detail what predictive reads and dynamic caching are?
+
+# TODO link to / include more detailed benchmarks (perhaps as a graph?)
