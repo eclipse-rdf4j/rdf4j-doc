@@ -34,7 +34,7 @@ transaction levels. These changes were already introduced to the NativeStore in
 when using IsolationLevels.NONE.
 
 NativeStore has received three upgrades in the 3.2 release: predictive reads,
-dynamic caching and lower IO for transactions. This gives us around a 15%
+dynamic caching and lower IO for transactions. The lowering of transaction IO gives us around a 15%
 higher transaction throughput for small transactions. Predictive reads and
 dynamic caching make queries that read a lot of data up to 70% faster, a good
 example is `SELECT DISTINCT ?p WHERE {?s ?p ?o}`. The dynamic caching will help
@@ -45,3 +45,4 @@ million triples.
 # TODO perhaps explain in a bit more detail what predictive reads and dynamic caching are?
 
 # TODO link to / include more detailed benchmarks (perhaps as a graph?)
+
