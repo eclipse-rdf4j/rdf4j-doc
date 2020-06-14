@@ -20,6 +20,7 @@ it uses a very light-weight internal datastructure initially, only converting
 to a more heavily indexed form when necessary to answer particular queries. It
 can avoid this upgrade, however, for use cases where we simply wish to iterate
 over all statements in the model. 
+<!--more-->
 
 Since such simple interation is a common pattern in transaction handling, the
 DynamicModel has a large effect on the transaction isolation overhead in the
