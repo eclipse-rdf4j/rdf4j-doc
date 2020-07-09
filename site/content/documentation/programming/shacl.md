@@ -160,6 +160,20 @@ The `ValidationReport` class provides the same information as the validationRepo
 
 There is no support for `sh:severity`, all violations will trigger an exception.
 
+## Limiting the validation report
+
+Large validation reports take time to generate and can use large amounts of memory. 
+Limiting the size of the report can be useful to speedup validation and to reduce the number of similar violations. 
+
+Limitations can either be configured directly in the ShaclSail or through the configuration files.
+
+ - `setValidationResultsLimitTotal(1000)` limits the total number of validation results per report to 1000.
+     - `<http://rdf4j.org/config/sail/shacl#validationResultsLimitTotal>`
+ - `setValidationResultsLimitPerConstraint(10)` limits the number of validation results per constraint component to 10
+     - `<http://rdf4j.org/config/sail/shacl#validationResultsLimitPerConstraint>`
+
+ Use -1 to remove a limit and 0 to validate but return an empty validation report. -1 is the default.
+
 ## Retrieving violated shapes
 
 Since all shapes are stored in the SHACL shapes graph, the actual shape that was violated can be retrieved from the
