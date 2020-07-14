@@ -147,8 +147,10 @@ The `validationReportModel` follows the report format specified by the W3C SHACL
 []
     a sh:ValidationReport ;
     sh:conforms false ;
+    rdf4j:truncated false;
     sh:result [
         a sh:ValidationResult ;
+        sh:value "eighteen";
         sh:focusNode <http://example.com/ns#pete> ;
         sh:resultPath <http://example.com/ns#age> ;
         sh:sourceConstraintComponent sh:DatatypeConstraintComponent ;
@@ -173,6 +175,8 @@ Limitations can either be configured directly in the ShaclSail or through the co
      - `<http://rdf4j.org/config/sail/shacl#validationResultsLimitPerConstraint>`
 
  Use -1 to remove a limit and 0 to validate but return an empty validation report. -1 is the default.
+ 
+ A truncated validation report will have `isTruncated()` return true and the model will have `rdf4j:truncated true`.
 
 ## Retrieving violated shapes
 
