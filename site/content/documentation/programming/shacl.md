@@ -165,7 +165,7 @@ There is no support for `sh:severity`, all violations will trigger an exception.
 ## Limiting the validation report
 
 Large validation reports take time to generate and can use large amounts of memory. 
-Limiting the size of the report can be useful to speedup validation and to reduce the number of similar violations. 
+Limiting the size of the report can be useful to speed up validation and to reduce the number of similar violations. 
 
 Limitations can either be configured directly in the ShaclSail or through the configuration files.
 
@@ -476,5 +476,4 @@ Here are some useful links to learn more about SHACL:
 
 - [W3C SHACL specification](http://www.w3.org/TR/shacl/)
 - [Validating RDF Data](http://book.validatingrdf.com/) (various authors)
-
 
