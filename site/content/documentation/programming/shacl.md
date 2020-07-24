@@ -257,50 +257,45 @@ Parallel validation further increases performance. This can be disabled with `se
 The initial commit to an empty ShaclSail is further optimized if the underlying sail is a MemoryStore.
 
 Some workloads will not fit in memory and need to be validated while stored on disk. This can be achieved by using a 
-NativeStore and temporarily disabling the SHACL validation while loading data. After loading data there is a special
-method to trigger a full validation against your shapes. The process is illustrated in the following example:
+NativeStore and using the new transaction settings introduced in 3.3.0. 
+
+ - `ShaclSail.TransactionSettings.ValidationApproach.Auto`: Let the ShaclSail choose the best approach.
+ - `ShaclSail.TransactionSettings.ValidationApproach.Bulk`: Optimized for large transactions, disables caching and parallel validation and runs a full validation step at the end of the transaction.
+ - `ShaclSail.TransactionSettings.ValidationApproach.Disabled`: Disable validation.
+ 
+Disabling validation for a transaction may leave your data in an invalid state. Running a transaction with bulk validation will force a full validation. 
+This is a useful approach if you need to use multiple transactions to bulk load your data.  
 
 {{< highlight java >}}
 ShaclSail shaclSail = new ShaclSail(new NativeStore(new File(...), "spoc,ospc,psoc"));
-
-// significantly reduce required memory
-shaclSail.setCacheSelectNodes(false);
-
-// further reduce required memory by not running validation in parallel
-shaclSail.setParallelValidation(false);
-
 SailRepository sailRepository = new SailRepository(shaclSail);
 
-shaclSail.disableValidation();
-
 try (SailRepositoryConnection connection = sailRepository.getConnection()) {
-    // load shapes
-    connection.begin(IsolationLevels.NONE);
-    try (InputStream inputStream = new FileInputStream("shacl.ttl")) {
-        connection.add(inputStream, "", RDFFormat.TURTLE, RDF4J.SHACL_SHAPE_GRAPH);
-    }
-    connection.commit();
-
-    // load data
-    connection.begin(IsolationLevels.NONE);
-    try (InputStream inputStream = new BufferedInputStream(new FileInputStream("data.ttl"))) {
-        connection.add(inputStream, "", RDFFormat.TURTLE);
-    }
-    connection.commit();
+	
+	connection.begin(IsolationLevels.NONE, ShaclSail.TransactionSettings.ValidationApproach.Bulk);
+	
+	// load shapes
+	try (InputStream inputStream = new FileInputStream("shacl.ttl")) {
+		connection.add(inputStream, "", RDFFormat.TURTLE, RDF4J.SHACL_SHAPE_GRAPH);
+	}
+	
+	// load data
+	try (InputStream inputStream = new BufferedInputStream(new FileInputStream("data.ttl"))) {
+		connection.add(inputStream, "", RDFFormat.TURTLE);
+	}
+	
+	// commit transaction and catch any exception
+	try {
+		connection.commit();
+	} catch (RepositoryException e){
+		if(e.getCause() instanceof ValidationException){
+			Model model = ((ValidationException) e.getCause()).validationReportAsModel();
+			Rio.write(model, System.out, RDFFormat.TURTLE);
+		}
+	}
+	
 }
-shaclSail.enableValidation();
-
-try (SailRepositoryConnection connection = sailRepository.getConnection()) {
-    connection.begin(IsolationLevels.NONE);
-    ValidationReport revalidate = ((ShaclSailConnection) connection.getSailConnection()).revalidate();
-    connection.commit();
-
-    if (!revalidate.conforms()) {
-        Rio.write(revalidate.asModel(), System.out, RDFFormat.TURTLE);
-    }
-
-}
-
+		
 sailRepository.shutDown();
 {{< / highlight >}}
 
